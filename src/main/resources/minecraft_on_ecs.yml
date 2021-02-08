@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creating ECS service
+
+Parameters:
+  Memory:
+    Type: Number
+    Description: How many GB of RAM to give the server
+    Default: 2096
+  CPU:
+    Type: Number
+    Description: How many cores to give the server
+    Default: 1024
+  StackName:
+    Type: String
+    Description: The name of this stack
+    Default: example-server
+
+Resources:
+  MountVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+  MountSubnetOne:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref MountVpc
+      AvailabilityZone: "us-west-2a"
+  MountSubnetTwo:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      VpcId: !Ref MountVpc
+      AvailabilityZone: "us-west-2b"
+
+  FileSystem:
+    Type: AWS::EFS::FileSystem
+  MountTarget:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref FileSystem
+      SubnetId: !Ref MountSubnetOne
+      SecurityGroups:
+        - !GetAtt MountVpc.DefaultSecurityGroup
+  Cluster:
+    Type: AWS::ECS::Cluster
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Name: !Ref StackName
+          Cpu: !Ref CPU
+          Memory: !Ref Memory
+          Essential: true
+          Image: 653528873951.dkr.ecr.us-west-2.amazonaws.com/minecraft-server:latest
+          PortMappings:
+            - ContainerPort: 25565
+              HostPort: 25565
+          MountPoints:
+            - SourceVolume: "efs-vol"
+              ContainerPath: /data
+      Volumes:
+        - Name: "efs-vol"
+          EFSVolumeConfiguration:
+            FilesystemId: !Ref MountTarget
+
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      ServiceName: "minecraft-server"
