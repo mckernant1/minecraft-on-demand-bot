@@ -5,7 +5,7 @@ Parameters:
   Memory:
     Type: Number
     Description: How many GB of RAM to give the server
-    Default: 2096
+    Default: 2048
   CPU:
     Type: Number
     Description: How many cores to give the server
@@ -19,7 +19,17 @@ Resources:
   MountVpc:
     Type: AWS::EC2::VPC
     Properties:
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
       CidrBlock: 10.0.0.0/16
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: MountVpc
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref MountVpc
   MountSubnetOne:
     Type: AWS::EC2::Subnet
     Properties:
@@ -44,15 +54,42 @@ Resources:
         - !GetAtt MountVpc.DefaultSecurityGroup
   Cluster:
     Type: AWS::ECS::Cluster
+    Properties:
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ '', [ !Ref StackName, ExecutionRole ] ]
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: !Ref CPU
+      Memory: !Ref Memory
+      ExecutionRoleArn: !Ref ExecutionRole
       ContainerDefinitions:
         - Name: !Ref StackName
+          Essential: true
           Cpu: !Ref CPU
           Memory: !Ref Memory
-          Essential: true
-          Image: 653528873951.dkr.ecr.us-west-2.amazonaws.com/minecraft-server:latest
+          Image: itzg/minecraft-server:latest
           PortMappings:
             - ContainerPort: 25565
               HostPort: 25565
@@ -62,15 +99,25 @@ Resources:
       Volumes:
         - Name: "efs-vol"
           EFSVolumeConfiguration:
-            FilesystemId: !Ref MountTarget
+            FilesystemId: !Ref FileSystem
 
   Service:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref Cluster
+      LaunchType: FARGATE
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
       DesiredCount: 1
       TaskDefinition: !Ref TaskDefinition
+      PlatformVersion: 1.4.0
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - !Ref MountSubnetOne
+            - !Ref MountSubnetTwo
+          SecurityGroups:
+            - !GetAtt MountVpc.DefaultSecurityGroup
       ServiceName: "minecraft-server"
