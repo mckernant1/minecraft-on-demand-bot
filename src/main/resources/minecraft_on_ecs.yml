@@ -14,6 +14,10 @@ Parameters:
     Type: String
     Description: The name of this stack
     Default: example-server
+  Type:
+    Type: String
+    Description: Forge, modded or vanilla
+    Default: vanilla
 
 Resources:
   MountVpc:
@@ -30,6 +34,17 @@ Resources:
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref MountVpc
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MountVpc
+  PublicRoute1:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
   MountSubnetOne:
     Type: AWS::EC2::Subnet
     Properties:
@@ -42,14 +57,45 @@ Resources:
       CidrBlock: 10.0.2.0/24
       VpcId: !Ref MountVpc
       AvailabilityZone: "us-west-2b"
+  MountSubnetOneRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MountSubnetOne
+      RouteTableId: !Ref PublicRouteTable
+  MountSubnetTwoRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref MountSubnetTwo
+      RouteTableId: !Ref PublicRouteTable
+  SecurtiyGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 25565
+      ToPort: 25565
+      CidrIp: 0.0.0.0/0
+      GroupId: !GetAtt MountVpc.DefaultSecurityGroup
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref StackName
+      RetentionInDays: 7
 
   FileSystem:
     Type: AWS::EFS::FileSystem
-  MountTarget:
+  MountTargetOne:
     Type: AWS::EFS::MountTarget
     Properties:
       FileSystemId: !Ref FileSystem
       SubnetId: !Ref MountSubnetOne
+      SecurityGroups:
+        - !GetAtt MountVpc.DefaultSecurityGroup
+  MountTargetTwo:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref FileSystem
+      SubnetId: !Ref MountSubnetTwo
       SecurityGroups:
         - !GetAtt MountVpc.DefaultSecurityGroup
   Cluster:
@@ -87,9 +133,20 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref StackName
           Essential: true
-          Cpu: !Ref CPU
-          Memory: !Ref Memory
           Image: itzg/minecraft-server:latest
+          Environment:
+            - Name: EULA
+              Value: true
+            - Name: TYPE
+              Value: !Ref Type
+            - Name: MEMORY
+              Value: !Join [ '', [ !Ref Memory, 'M' ] ]
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: us-west-2
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: 'minecraft-server'
           PortMappings:
             - ContainerPort: 25565
               HostPort: 25565
@@ -103,6 +160,10 @@ Resources:
 
   Service:
     Type: AWS::ECS::Service
+    DependsOn:
+      - PublicRoute1
+      - MountTargetOne
+      - MountTargetTwo
     Properties:
       Cluster: !Ref Cluster
       LaunchType: FARGATE
