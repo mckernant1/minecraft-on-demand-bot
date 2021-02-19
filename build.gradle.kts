@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 
 
@@ -32,6 +33,11 @@ dependencies {
 
 
     implementation(platform("software.amazon.awssdk:bom:2.15.69"))
+    implementation("software.amazon.awssdk:dynamodb-enhanced")
+    implementation("software.amazon.awssdk:ecs")
+    implementation("software.amazon.awssdk:ec2")
+    implementation("software.amazon.awssdk:cloudformation")
+
 
 }
 

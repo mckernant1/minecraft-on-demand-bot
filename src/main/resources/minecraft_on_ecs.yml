@@ -18,6 +18,14 @@ Parameters:
     Type: String
     Description: Forge, modded or vanilla
     Default: vanilla
+  Version:
+    Type: String
+    Description: The version to use
+    Default: LATEST
+  Ops:
+    Type: String
+    Description: 'List of ops ex: user1,user2'
+    Default: ''
 
 Resources:
   MountVpc:
@@ -75,7 +83,6 @@ Resources:
       ToPort: 25565
       CidrIp: 0.0.0.0/0
       GroupId: !GetAtt MountVpc.DefaultSecurityGroup
-
   LogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -137,6 +144,12 @@ Resources:
           Environment:
             - Name: EULA
               Value: true
+            - Name: ENABLE_AUTOPAUSE
+              Value: false
+            - Name: OPS
+              Value: !Ref Ops
+            - Name: Version
+              Value: !Ref Version
             - Name: TYPE
               Value: !Ref Type
             - Name: MEMORY
@@ -146,7 +159,7 @@ Resources:
             Options:
               awslogs-region: us-west-2
               awslogs-group: !Ref LogGroup
-              awslogs-stream-prefix: 'minecraft-server'
+              awslogs-stream-prefix: !Ref StackName
           PortMappings:
             - ContainerPort: 25565
               HostPort: 25565
@@ -181,4 +194,8 @@ Resources:
             - !Ref MountSubnetTwo
           SecurityGroups:
             - !GetAtt MountVpc.DefaultSecurityGroup
-      ServiceName: "minecraft-server"
+      ServiceName: !Ref StackName
+
+Outputs:
+  ClusterName:
+    Value: !Ref Cluster
