@@ -26,6 +26,10 @@ Parameters:
     Type: String
     Description: 'List of ops ex: user1,user2'
     Default: ''
+  OnOffSwitch:
+    Type: Number
+    Description: 0 for off 1 for on
+    Default: 1
 
 Resources:
   MountVpc:
@@ -183,7 +187,7 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 200
         MinimumHealthyPercent: 100
-      DesiredCount: 1
+      DesiredCount: !Ref OnOffSwitch
       TaskDefinition: !Ref TaskDefinition
       PlatformVersion: 1.4.0
       NetworkConfiguration:
