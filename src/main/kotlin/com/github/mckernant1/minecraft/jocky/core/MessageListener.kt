@@ -1,6 +1,6 @@
 package com.github.mckernant1.minecraft.jocky.core
 
-import com.github.mckernant1.minecraft.jocky.commands.CreateCommand
+import com.github.mckernant1.minecraft.jocky.commands.*
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -23,8 +23,12 @@ class MessageListener : ListenerAdapter() {
         }
     }
 
-    private fun getCommandFromString(command: String, event: MessageReceivedEvent) = when (command) {
+    private fun getCommandFromString(command: String, event: MessageReceivedEvent): AbstractCommand? = when (command) {
         "\$create" -> CreateCommand(event)
+        "\$list" -> ListCommand(event)
+        "\$start" -> StartCommand(event)
+        "\$stop" -> StopCommand(event)
+        "\$destroy" -> DestroyCommand(event)
         else -> null
     }
 

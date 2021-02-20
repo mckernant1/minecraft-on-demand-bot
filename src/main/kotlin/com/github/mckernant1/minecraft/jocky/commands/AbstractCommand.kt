@@ -13,4 +13,6 @@ abstract class AbstractCommand(val event: MessageReceivedEvent) {
 
     abstract suspend fun execute()
 
+    fun getCloudformationTemplate(): String = this::class.java.getResource("/minecraft_on_ecs.yml").readText()
+
 }

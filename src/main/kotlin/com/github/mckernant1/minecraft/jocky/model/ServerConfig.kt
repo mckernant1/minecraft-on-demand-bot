@@ -53,7 +53,7 @@ class ServerConfig(
         Parameter.builder().parameterKey("Type").parameterValue(type).build(),
         Parameter.builder().parameterKey("Version").parameterValue(version).build(),
         Parameter.builder().parameterKey("Ops").parameterValue(ops).build(),
-        Parameter.builder().parameterValue("OnOffSwitch").parameterValue(onOffSwitch.toString()).build()
+        Parameter.builder().parameterKey("OnOffSwitch").parameterValue(onOffSwitch.toString()).build()
     ).also {
         logger.info("Parameters $it")
     }

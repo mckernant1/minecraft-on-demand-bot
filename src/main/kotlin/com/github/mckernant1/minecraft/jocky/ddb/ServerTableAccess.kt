@@ -4,6 +4,7 @@ import com.github.mckernant1.minecraft.jocky.model.ServerConfig
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional
 
 class ServerTableAccess {
     companion object {
@@ -17,5 +18,12 @@ class ServerTableAccess {
         table.getItem(Key.builder().partitionValue(discordServerId).sortValue(serverName).build())
 
     fun putItem(config: ServerConfig) = table.putItem(config)
+
+    fun queryByDiscordServerId(discordServerId: String): List<ServerConfig> {
+        val conditional = QueryConditional.keyEqualTo(Key.builder().partitionValue(discordServerId).build())
+        return table.query(conditional).items().toList()
+    }
+
+    fun deleteItem(config: ServerConfig): ServerConfig = table.deleteItem(config)
 
 }
