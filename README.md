@@ -12,7 +12,7 @@ This is a discord bot that creates minecraft servers. It relies on AWS Cloudform
 
 `$stop <serverName>` -> stops a server
 
-`$update <serverName> [serverProperties]` -> updates the config of an existing server`$destroy <serverName>` -> destroys a server and its world
+`$update <serverName> [serverProperties]` -> updates the config of an existing server
 
 `$destroy <serverName>` -> destroys a server and its world
 
