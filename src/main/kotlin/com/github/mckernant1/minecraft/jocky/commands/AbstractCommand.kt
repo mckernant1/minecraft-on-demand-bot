@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-abstract class AbstractCommand(val event: MessageReceivedEvent) {
+abstract class AbstractCommand(protected val event: MessageReceivedEvent) {
 
     protected val words = event.message.contentRaw.split("\\s+".toRegex())
     protected val logger: Logger = LoggerFactory.getLogger(this::class.java)

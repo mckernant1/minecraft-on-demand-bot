@@ -29,6 +29,8 @@ class MessageListener : ListenerAdapter() {
         "\$start" -> StartCommand(event)
         "\$stop" -> StopCommand(event)
         "\$destroy" -> DestroyCommand(event)
+        "\$update" -> UpdateCommand(event)
+        "\$help" -> HelpCommand(event)
         else -> null
     }
 
