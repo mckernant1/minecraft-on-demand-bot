@@ -18,7 +18,7 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                     "`\$create <serverName> [serverProperties]` -> creates a new server see creation options\n" +
                     "`\$start <serverName>` -> starts a server\n" +
                     "`\$stop <serverName>` -> stops a server\n" +
-                    "`\$update <serverName> [serverProperties]` -> updates the config of an existing server" +
+                    "`\$update <serverName> [serverProperties]` -> updates the config of an existing server\n" +
                     "`\$destroy <serverName>` -> destroys a server and its world",
             false
         )

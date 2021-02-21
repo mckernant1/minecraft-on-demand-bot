@@ -8,6 +8,7 @@ This is a discord bot that creates minecraft servers. It relies on AWS Cloudform
 `$start <serverName>` -> starts a server
 `$stop <serverName>` -> stops a server
 `$update <serverName> [serverProperties]` -> updates the config of an existing server`$destroy <serverName>` -> destroys a server and its world
+`$destroy <serverName>` -> destroys a server and its world
 
 ### Creation Options
 cpu -> 1024 = 1CPU [reference](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html)
