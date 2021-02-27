@@ -28,6 +28,8 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                     "memory -> in MiB [reference](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html)\n" +
                     "type -> default is vanilla [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "version -> default is latest [reference](https://github.com/itzg/docker-minecraft-server)\n" +
+                    "ftbModpackId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
+                    "ftbModPackVersionId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "ops -> a string of comma delimited ops 'TheeAlbinoTree,TheBearPenguin'",
             false
         )

@@ -25,6 +25,10 @@ type -> default is vanilla [reference](https://github.com/itzg/docker-minecraft-
 
 version -> default is latest [reference](https://github.com/itzg/docker-minecraft-server)
 
+ftbModpackId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)
+
+ftbModPackVersionId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)
+
 ops -> a string of comma delimited ops 'TheeAlbinoTree,TheBearPenguin'
 
 ### Creation Examples

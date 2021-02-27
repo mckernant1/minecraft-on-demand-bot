@@ -22,6 +22,14 @@ Parameters:
     Type: String
     Description: The version to use
     Default: LATEST
+  FTBModPackId:
+    Type: String
+    Description: FTB modpack Id
+    Default: -1
+  FTBModPackVersionId:
+    Type: String
+    Description: FTB modpack version Id
+    Default: -1
   Ops:
     Type: String
     Description: 'List of ops ex: user1,user2'
@@ -158,6 +166,10 @@ Resources:
               Value: !Ref Type
             - Name: MEMORY
               Value: !Join [ '', [ !Ref Memory, 'M' ] ]
+            - Name: FTB_MODPACK_ID
+              Value: !Ref FTBModPackId
+            - Name: FTB_MODPACK_VERSION_ID
+              Value: !Ref FTBModPackVersionId
           LogConfiguration:
             LogDriver: awslogs
             Options:
