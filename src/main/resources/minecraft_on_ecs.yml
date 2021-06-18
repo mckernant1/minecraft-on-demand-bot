@@ -152,7 +152,7 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref StackName
           Essential: true
-          Image: itzg/minecraft-server:latest
+          Image: itzg/minecraft-server:multiarch-latest
           Environment:
             - Name: EULA
               Value: true

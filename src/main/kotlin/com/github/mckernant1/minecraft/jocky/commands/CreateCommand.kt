@@ -12,9 +12,15 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
-    override fun validate(): Boolean = runCatching {
-        ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
-    }.isSuccess && serverTable.getItem(event.guild.id, words[1]) == null
+    override fun validate(): Boolean {
+
+        return runCatching {
+            ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
+        }.onFailure {
+            logger.info("Failure parsing $words: $it")
+            it.printStackTrace()
+        }.isSuccess && serverTable.getItem(event.guild.id, words[1]) == null
+    }
 
     override suspend fun execute() {
         val config = ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
