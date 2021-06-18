@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 class DestroyCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate(): Unit {
         if (serverTable.getItem(event.guild.id, words[1]) == null) {
-            throw InvalidCommandException("This server already exists")
+            throw InvalidCommandException("This server doesn't exist")
         }
     }
 
