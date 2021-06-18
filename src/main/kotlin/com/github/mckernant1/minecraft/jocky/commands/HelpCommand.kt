@@ -30,7 +30,7 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                     "version -> default is latest [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "ftbModpackId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "ftbModPackVersionId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
-                    "ops -> a string of comma delimited ops 'TheeAlbinoTree,TheBearPenguin'",
+                    "ops -> a string of bar delimited ops Example ops=TheeAlbinoTree|TheBearPenguin",
             false
         )
         .addField(

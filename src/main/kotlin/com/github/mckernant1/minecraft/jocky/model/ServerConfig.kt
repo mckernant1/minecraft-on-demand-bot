@@ -43,7 +43,7 @@ class ServerConfig(
                 cpu = propertiesToAdd["cpu"]?.toInt() ?: 1024,
                 type = propertiesToAdd["type"] ?: "vanilla",
                 version = propertiesToAdd["version"] ?: "LATEST",
-                ops = propertiesToAdd["ops"] ?: "",
+                ops = propertiesToAdd["ops"]?.replace("|", ",") ?: "",
                 ftbModpackId = propertiesToAdd["ftbModpackId"] ?: "-1",
                 ftbModPackVersionId = propertiesToAdd["ftbModPackVersionId"] ?: "-1"
             )
