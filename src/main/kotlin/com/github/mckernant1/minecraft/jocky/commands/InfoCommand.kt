@@ -19,7 +19,7 @@ class InfoCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
         event.channel.sendMessage("""
 **Info for Server ${config.serverName}**
-status: ${if (config.onOffSwitch == 1) "On with IP of ${getPublicIp(config.getStackName())}:25565" else "Off"}
+status: ${if (config.onOffSwitch == 1) "On with IP of `${getPublicIp(config.getStackName())}:25565`" else "Off"}
 cpu: ${config.cpu}
 memory: ${config.memory}
 type: ${config.type}

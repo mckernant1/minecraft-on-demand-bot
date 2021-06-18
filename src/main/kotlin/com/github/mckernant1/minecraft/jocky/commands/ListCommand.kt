@@ -14,7 +14,7 @@ class ListCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
         }
 
         val serverStrings = servers.joinToString("\n") {
-            "${it.serverName} is currently ${if (it.onOffSwitch == 1) "On with IP of ${getPublicIp(it.getStackName())}" else "Off"}"
+            "${it.serverName} is currently ${if (it.onOffSwitch == 1) "On with IP of `${getPublicIp(it.getStackName())}:25565`" else "Off"}"
         }
 
         event.channel.sendMessage("Servers:\n$serverStrings").complete()
