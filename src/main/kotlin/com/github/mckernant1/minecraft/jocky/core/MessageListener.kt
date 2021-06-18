@@ -10,10 +10,9 @@ import kotlin.concurrent.thread
 class MessageListener : ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        event.channel.sendTyping().complete()
         val words = event.message.contentRaw.split("\\s+".toRegex())
         val command = getCommandFromString(words[0], event) ?: return
-
+        event.channel.sendTyping().complete()
         thread {
             try {
                 command.validate()
