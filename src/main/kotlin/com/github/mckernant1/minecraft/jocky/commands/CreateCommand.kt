@@ -3,6 +3,7 @@ package com.github.mckernant1.minecraft.jocky.commands
 import com.github.mckernant1.minecraft.jocky.cfn.cfnClient
 import com.github.mckernant1.minecraft.jocky.core.getPublicIp
 import com.github.mckernant1.minecraft.jocky.core.waitForCompletion
+import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import com.github.mckernant1.minecraft.jocky.model.ServerConfig
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -12,14 +13,12 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
-    override fun validate(): Boolean {
+    override fun validate() {
+        ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
 
-        return runCatching {
-            ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
-        }.onFailure {
-            logger.info("Failure parsing $words: $it")
-            it.printStackTrace()
-        }.isSuccess && serverTable.getItem(event.guild.id, words[1]) == null
+        if (serverTable.getItem(event.guild.id, words[1]) != null) {
+            throw InvalidCommandException("A server with this name already exists. Do \$list to see existing servers")
+        }
     }
 
     override suspend fun execute() {
@@ -34,14 +33,14 @@ class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
             .build()
         cfnClient.createStack(req)
         logger.info("Creation has been started for $stackName")
-        event.channel.sendMessage("We are now creating your server. Hold on...").complete()
+        event.channel.sendMessage("We are now creating your server ${config.serverName}. Hold on...").complete()
         val success = waitForCompletion(stackName, listOf(StackStatus.CREATE_COMPLETE), listOf(StackStatus.ROLLBACK_COMPLETE, StackStatus.ROLLBACK_FAILED))
         if (success) {
             val publicIp = getPublicIp(stackName)
             serverTable.putItem(config)
-            event.channel.sendMessage("Your minecraft server has been created with ip: `$publicIp:25565`!").complete()
+            event.channel.sendMessage("Your minecraft server ${config.serverName} has been created with ip: `$publicIp:25565`!").complete()
         } else {
-            event.channel.sendMessage("Something wrong happened with your Cloudformation stack").complete()
+            event.channel.sendMessage("Something wrong happened with your Cloudformation stack for ${config.serverName}").complete()
         }
     }
 }

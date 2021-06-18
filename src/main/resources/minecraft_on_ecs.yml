@@ -39,6 +39,10 @@ Parameters:
     Description: 0 for off 1 for on
     Default: 1
 
+Conditions:
+  IsFTB:
+    !Equals [ !Ref Type, "FTBA" ]
+
 Resources:
   MountVpc:
     Type: AWS::EC2::VPC
@@ -152,7 +156,7 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref StackName
           Essential: true
-          Image: itzg/minecraft-server:java8-multiarch
+          Image: !If [IsFTB, "itzg/minecraft-server:java8-multiarch", "itzg/minecraft-server:multiarch-latest" ]
           Environment:
             - Name: EULA
               Value: true

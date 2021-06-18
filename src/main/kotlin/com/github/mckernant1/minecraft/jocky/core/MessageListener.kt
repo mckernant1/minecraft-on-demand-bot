@@ -1,6 +1,7 @@
 package com.github.mckernant1.minecraft.jocky.core
 
 import com.github.mckernant1.minecraft.jocky.commands.*
+import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -9,16 +10,23 @@ import kotlin.concurrent.thread
 class MessageListener : ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
+        event.channel.sendTyping().complete()
         val words = event.message.contentRaw.split("\\s+".toRegex())
         val command = getCommandFromString(words[0], event) ?: return
 
         thread {
-            if (command.validate()) {
-                runBlocking {
+            try {
+                command.validate()
+            } catch (e: Exception) {
+                event.channel.sendMessage("Your command was invalid message: ${e.message}").complete()
+                return@thread
+            }
+            runBlocking {
+                try {
                     command.execute()
+                } catch (e: Exception) {
+                    event.channel.sendMessage("Your command experienced an internal failure: $e")
                 }
-            } else {
-                event.channel.sendMessage("Your command was not valid").complete()
             }
         }
     }
@@ -31,6 +39,8 @@ class MessageListener : ListenerAdapter() {
         "\$destroy" -> DestroyCommand(event)
         "\$update" -> UpdateCommand(event)
         "\$help" -> HelpCommand(event)
+        "\$examples" -> ExamplesCommand(event)
+        "\$info" -> InfoCommand(event)
         else -> null
     }
 

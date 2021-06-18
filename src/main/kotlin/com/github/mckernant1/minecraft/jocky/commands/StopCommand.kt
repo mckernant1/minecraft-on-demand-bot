@@ -2,6 +2,7 @@ package com.github.mckernant1.minecraft.jocky.commands
 
 import com.github.mckernant1.minecraft.jocky.cfn.cfnClient
 import com.github.mckernant1.minecraft.jocky.core.waitForCompletion
+import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import software.amazon.awssdk.services.cloudformation.model.Capability
@@ -9,8 +10,11 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class StopCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
-    override fun validate(): Boolean =
-        serverTable.getItem(event.guild.id, words[1])?.onOffSwitch == 1
+    override fun validate(): Unit {
+        if(serverTable.getItem(event.guild.id, words[1])?.onOffSwitch != 1) {
+            throw InvalidCommandException("This server is already stopped")
+        }
+    }
 
     override suspend fun execute() {
         val server = serverTable.getItem(event.guild.id, words[1])!!

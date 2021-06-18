@@ -1,5 +1,6 @@
 package com.github.mckernant1.minecraft.jocky.model
 
+import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import org.slf4j.LoggerFactory
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean
@@ -36,6 +37,7 @@ class ServerConfig(
                 val split = pair.split("=")
                 split[0] to split[1]
             }.toMap()
+
             return ServerConfig(
                 discordServerId,
                 serverName,
@@ -46,7 +48,19 @@ class ServerConfig(
                 ops = propertiesToAdd["ops"]?.replace("|", ",") ?: "",
                 ftbModpackId = propertiesToAdd["ftbModpackId"] ?: "-1",
                 ftbModPackVersionId = propertiesToAdd["ftbModPackVersionId"] ?: "-1"
-            )
+            ).also {
+                if (it.type != "FTBA" && (it.ftbModPackVersionId != "-1" || it.ftbModpackId != "-1")) {
+                    throw InvalidCommandException("In order to specify ftbModPackVersionId or ftbModpackId you need to have type=FTBA")
+                }
+
+                if (it.type == "FTBA" && it.ftbModpackId == "-1") {
+                    throw InvalidCommandException("In order to specify type=FTBA you need to specify ftbModpackId")
+                }
+
+                if (it.type == "vanilla" && it.version == "LATEST") {
+                    throw InvalidCommandException("It is recommended that you set a minecraft version when using vanilla")
+                }
+            }
         }
     }
 

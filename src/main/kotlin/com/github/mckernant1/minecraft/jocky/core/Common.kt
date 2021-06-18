@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.ecs.model.DescribeTasksRequest
 private val logger: Logger = LoggerFactory.getLogger("CommonUtils")
 
 fun getPublicIp(stackName: String): String {
+
     val clusterName = describeStack(stackName).outputs().find { it.outputKey() == "ClusterName" }?.outputValue()
         ?: error(
             "Stack output was not found. Available outputs are ${
@@ -33,13 +34,18 @@ fun getPublicIp(stackName: String): String {
     val networkInterfaceId =
         task.attachments().find { attachment -> attachment.details().any { it.name() == "networkInterfaceId" } }
             ?.details()?.find { it.name() == "networkInterfaceId" }?.value()
-
     return ec2Client.describeNetworkInterfaces {
         it.networkInterfaceIds(networkInterfaceId)
     }.networkInterfaces().first().association().publicIp()
 }
 
 fun describeStack(stackName: String): Stack {
+    if (cfnClient.listStacks()
+        .stackSummaries()
+        .none { it.stackName() == stackName }) {
+        error("Stack is in the DynamoDB Table but not in cloudformation")
+    }
+
     val describeRequest = DescribeStacksRequest.builder()
         .stackName(stackName)
         .build()
@@ -53,7 +59,7 @@ suspend fun waitForCompletion(stackName: String, successStatus: List<StackStatus
         logger.info("Waiting for cloudformation action on $stackName ($timesToTry/$limit)")
         val stack = describeStack(stackName)
         if (successStatus.contains(stack.stackStatus())) {
-            logger.info("Create Complete! $stackName")
+            logger.info("${stack.stackStatus()} $stackName")
             return true
         }
         if (failedStatus.contains(stack.stackStatus())) {
@@ -61,6 +67,7 @@ suspend fun waitForCompletion(stackName: String, successStatus: List<StackStatus
                 it.stackName(stackName)
             }
             logger.info("Stack failed to create $stackName: ${stack.stackStatus()}")
+            logger.info("Reason $stack.")
             return false
         }
         if (timesToTry >= limit) {

@@ -3,6 +3,7 @@ package com.github.mckernant1.minecraft.jocky.commands
 import com.github.mckernant1.minecraft.jocky.cfn.cfnClient
 import com.github.mckernant1.minecraft.jocky.core.getPublicIp
 import com.github.mckernant1.minecraft.jocky.core.waitForCompletion
+import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import com.github.mckernant1.minecraft.jocky.model.ServerConfig
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -10,9 +11,13 @@ import software.amazon.awssdk.services.cloudformation.model.Capability
 import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class UpdateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
-    override fun validate(): Boolean = runCatching {
+    override fun validate(): Unit  {
         ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
-    }.isSuccess && serverTable.getItem(event.guild.id, words[1]) != null
+
+        if (serverTable.getItem(event.guild.id, words[1]) != null) {
+            throw InvalidCommandException("This server does not exist")
+        }
+    }
 
     override suspend fun execute() {
         val newConfig = ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))

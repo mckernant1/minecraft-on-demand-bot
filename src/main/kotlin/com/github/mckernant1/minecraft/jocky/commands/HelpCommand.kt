@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
-    override fun validate(): Boolean = true
+    override fun validate() = Unit
 
     override suspend fun execute() {
         event.channel.sendMessage(message).complete()

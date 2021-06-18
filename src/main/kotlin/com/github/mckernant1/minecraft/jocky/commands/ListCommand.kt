@@ -5,7 +5,7 @@ import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 class ListCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
-    override fun validate(): Boolean = true
+    override fun validate() = Unit
 
     override suspend fun execute() {
         val servers = serverTable.queryByDiscordServerId(event.guild.id).ifEmpty {
