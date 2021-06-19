@@ -8,7 +8,7 @@ class ExamplesCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override suspend fun execute() {
         event.channel.sendMessage(
             "**Create a Vanilla Server**\n" +
-                    "\$create vanillla memory=4096,cpu=2048,version=1.17,ops=TheeAlbinoTree|TheBearPenguin" +
+                    "\$create vanillla memory=4096,cpu=2048,type=vanilla,version=1.17,ops=TheeAlbinoTree|TheBearPenguin" +
                     "\n\n" +
                     "**Create a FTB Server **\n" +
                     "for pack https://www.feed-the-beast.com/modpack/ftb_endeavour" +

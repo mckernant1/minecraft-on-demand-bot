@@ -19,7 +19,9 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                     "`\$start <serverName>` -> starts a server\n" +
                     "`\$stop <serverName>` -> stops a server\n" +
                     "`\$update <serverName> [serverProperties]` -> updates the config of an existing server\n" +
-                    "`\$destroy <serverName>` -> destroys a server and its world",
+                    "`\$destroy <serverName>` -> destroys a server and its world\n" +
+                    "`\$info <serverName>` -> gives the infor about a server\n" +
+                    "`\$examples` -> gives examples of how to create a server",
             false
         )
         .addField(
@@ -31,12 +33,6 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                     "ftbModpackId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "ftbModPackVersionId -> only for FTB server types [reference](https://github.com/itzg/docker-minecraft-server)\n" +
                     "ops -> a string of bar delimited ops Example ops=TheeAlbinoTree|TheBearPenguin",
-            false
-        )
-        .addField(
-            "Creation examples",
-            "Should be comma delimited like this NO SPACES: \n" +
-                    "`\$create myserver memory=2048,version=1.16.5,cpu=1024`",
             false
         )
         .build()
