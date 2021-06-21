@@ -107,6 +107,8 @@ Resources:
 
   FileSystem:
     Type: AWS::EFS::FileSystem
+    Properties:
+      BackupPolicy: ENABLED
   MountTargetOne:
     Type: AWS::EFS::MountTarget
     Properties:

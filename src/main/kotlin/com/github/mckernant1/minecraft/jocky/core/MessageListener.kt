@@ -10,6 +10,12 @@ import kotlin.concurrent.thread
 class MessageListener : ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
+
+        if (event.author.id == "164148012019482625") {
+            event.channel.sendMessage("Fahk you").complete()
+            return
+        }
+
         val words = event.message.contentRaw.split("\\s+".toRegex())
         val command = getCommandFromString(words[0], event) ?: return
         event.channel.sendTyping().complete()
