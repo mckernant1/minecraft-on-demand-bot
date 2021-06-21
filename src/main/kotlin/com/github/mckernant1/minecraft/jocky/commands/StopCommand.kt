@@ -25,7 +25,7 @@ class StopCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
             it.parameters(server.toParameterList())
         }
         event.channel.sendMessage("Server ${server.serverName} is shutting down").complete()
-        val success = waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE))
+        val success = waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE, StackStatus.UPDATE_ROLLBACK_COMPLETE))
         if (success) {
             event.channel.sendMessage("Server ${server.serverName} has has shut down successfully")
                 .complete()
