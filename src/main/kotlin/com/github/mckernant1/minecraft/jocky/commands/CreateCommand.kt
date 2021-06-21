@@ -14,11 +14,8 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
     override fun validate() {
+        validateServerNotExists()
         ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
-
-        if (serverTable.getItem(event.guild.id, words[1]) != null) {
-            throw InvalidCommandException("A server with this name already exists. Do \$list to see existing servers")
-        }
     }
 
     override suspend fun execute() {

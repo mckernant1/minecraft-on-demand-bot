@@ -9,13 +9,11 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class DestroyCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate(): Unit {
-        if (serverTable.getItem(event.guild.id, words[1]) == null) {
-            throw InvalidCommandException("This server doesn't exist")
-        }
+        validateServerExists()
     }
 
     override suspend fun execute() {
-        val server = serverTable.getItem(event.guild.id, words[1])!!
+        val server = server!!
         serverTable.deleteItem(server)
         cfnClient.deleteStack {
             it.stackName(server.getStackName())

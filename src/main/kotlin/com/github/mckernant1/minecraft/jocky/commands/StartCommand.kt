@@ -11,13 +11,11 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class StartCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate(): Unit {
-        if(serverTable.getItem(event.guild.id, words[1])?.onOffSwitch != 0) {
-            throw InvalidCommandException("This server is already running")
-        }
+        validateServerExists()
     }
 
     override suspend fun execute() {
-        val server = serverTable.getItem(event.guild.id, words[1])!!
+        val server = server!!
         server.onOffSwitch = 1
         cfnClient.updateStack {
             it.stackName(server.getStackName())

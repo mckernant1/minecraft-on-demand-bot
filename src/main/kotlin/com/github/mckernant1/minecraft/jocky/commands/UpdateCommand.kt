@@ -12,11 +12,8 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 
 class UpdateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate(): Unit  {
+        validateServerExists()
         ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
-
-        if (serverTable.getItem(event.guild.id, words[1]) != null) {
-            throw InvalidCommandException("This server does not exist")
-        }
     }
 
     override suspend fun execute() {
