@@ -24,8 +24,13 @@ class StartCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
             it.parameters(server.toParameterList())
         }
         event.channel.sendMessage("Server ${server.serverName} is starting up...").complete()
-        waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE))
-        event.channel.sendMessage("Server ${server.serverName} has started and has IP: `${getPublicIp(server.getStackName())}:25565`").complete()
-        serverTable.putItem(server)
+        val success = waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE))
+        if (success) {
+            event.channel.sendMessage("Server ${server.serverName} has started and has IP: `${getPublicIp(server.getStackName())}:25565`")
+                .complete()
+            serverTable.putItem(server)
+        } else {
+            event.channel.sendMessage("Server startup failed")
+        }
     }
 }

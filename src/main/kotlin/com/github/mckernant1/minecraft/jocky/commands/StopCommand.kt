@@ -1,6 +1,7 @@
 package com.github.mckernant1.minecraft.jocky.commands
 
 import com.github.mckernant1.minecraft.jocky.cfn.cfnClient
+import com.github.mckernant1.minecraft.jocky.core.getPublicIp
 import com.github.mckernant1.minecraft.jocky.core.waitForCompletion
 import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
@@ -24,8 +25,13 @@ class StopCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
             it.parameters(server.toParameterList())
         }
         event.channel.sendMessage("Server ${server.serverName} is shutting down").complete()
-        waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE))
-        event.channel.sendMessage("Server ${server.serverName} has shut down successfully").complete()
-        serverTable.putItem(server)
+        val success = waitForCompletion(server.getStackName(), listOf(StackStatus.UPDATE_COMPLETE), listOf(StackStatus.UPDATE_ROLLBACK_FAILED, StackStatus.ROLLBACK_COMPLETE))
+        if (success) {
+            event.channel.sendMessage("Server ${server.serverName} has has shut down successfully")
+                .complete()
+            serverTable.putItem(server)
+        } else {
+            event.channel.sendMessage("Server shutdown failed")
+        }
     }
 }
