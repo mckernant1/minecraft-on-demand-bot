@@ -159,7 +159,7 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref StackName
           Essential: true
-          Image: !If [IsFTB, "itzg/minecraft-server:java8-multiarch", "itzg/minecraft-server:multiarch-latest" ]
+          Image: !If [IsFTB, "itzg/minecraft-server:java8-multiarch", "itzg/minecraft-server:latest" ]
           Environment:
             - Name: EULA
               Value: true
