@@ -3,31 +3,38 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     application
 
-    kotlin("jvm") version "1.4.21"
+    kotlin("jvm") version "1.6.20"
 
-    id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 group = "com.github.mckernant1.minecraft"
 version = "0.0.1"
 
 application {
-    mainClassName = "com.github.mckernant1.minecraft.jocky.RunnerKt"
+    mainClass.set("com.github.mckernant1.minecraft.jocky.RunnerKt")
 }
 
 repositories {
     mavenCentral()
-    jcenter()
+    maven {
+        url = uri("https://mvn.mckernant1.com/release")
+    }
+    maven {
+        name = "m2-dv8tion"
+        url = uri("https://m2.dv8tion.net/releases")
+    }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
 
+    implementation("com.github.mckernant1:kotlin-utils:0.0.12")
+    implementation("com.google.code.gson:gson:2.9.0")
 
-    implementation("net.dv8tion:JDA:4.2.0_204")
-
+    implementation("net.dv8tion:JDA:4.4.0_352")
 
     implementation("org.slf4j:slf4j-simple:1.7.30")
 

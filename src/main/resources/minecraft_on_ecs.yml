@@ -18,30 +18,13 @@ Parameters:
     Type: String
     Description: Forge, modded or vanilla
     Default: vanilla
-  Version:
+  ServerJson:
     Type: String
-    Description: The version to use
-    Default: LATEST
-  FTBModPackId:
-    Type: String
-    Description: FTB modpack Id
-    Default: -1
-  FTBModPackVersionId:
-    Type: String
-    Description: FTB modpack version Id
-    Default: -1
-  Ops:
-    Type: String
-    Description: 'List of ops ex: user1,user2'
-    Default: ''
+    Description: The server json used to
   OnOffSwitch:
     Type: Number
     Description: 0 for off 1 for on
     Default: 1
-
-Conditions:
-  IsFTB:
-    !Equals [ !Ref Type, "FTBA" ]
 
 Resources:
   MountVpc:
@@ -159,26 +142,12 @@ Resources:
       ContainerDefinitions:
         - Name: !Ref StackName
           Essential: true
-          Image: !If [IsFTB, "itzg/minecraft-server:java8-multiarch", "itzg/minecraft-server:latest" ]
+          Image: "653528873951.dkr.ecr.us-west-2.amazonaws.com/mc-docker"
           Environment:
-            - Name: EULA
-              Value: true
-            - Name: MOTD
-              Value: "Beep Boop. Turn me off when your done"
-            - Name: ENABLE_AUTOPAUSE
-              Value: false
-            - Name: OPS
-              Value: !Ref Ops
-            - Name: Version
-              Value: !Ref Version
-            - Name: TYPE
+            - Name: SERVER_TYPE
               Value: !Ref Type
-            - Name: MEMORY
-              Value: !Join [ '', [ !Ref Memory, 'M' ] ]
-            - Name: FTB_MODPACK_ID
-              Value: !Ref FTBModPackId
-            - Name: FTB_MODPACK_VERSION_ID
-              Value: !Ref FTBModPackVersionId
+            - Name: SERVER_JSON
+              Value: !Ref ServerJson
           LogConfiguration:
             LogDriver: awslogs
             Options:
