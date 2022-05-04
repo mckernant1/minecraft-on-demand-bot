@@ -13,11 +13,10 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus
 class UpdateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate(): Unit  {
         validateServerExists()
-        ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
     }
 
     override suspend fun execute() {
-        val newConfig = ServerConfig.fromString(event.guild.id, words[1], words.drop(2).joinToString(""))
+        val newConfig = promptForServerConfig()
 
         cfnClient.updateStack {
             it.stackName(newConfig.getStackName())

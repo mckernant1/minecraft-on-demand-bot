@@ -7,7 +7,7 @@ class HelpCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override fun validate() = Unit
 
     override suspend fun execute() {
-        event.channel.sendMessage(message).complete()
+        event.channel.sendMessageEmbeds(message).complete()
     }
 
     private val message = EmbedBuilder()

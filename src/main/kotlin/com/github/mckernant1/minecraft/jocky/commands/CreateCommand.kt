@@ -50,26 +50,4 @@ class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
                 .complete()
         }
     }
-
-    private fun promptForServerConfig(): ServerConfig {
-        val serverType =
-            ServerType.valueOf(event.channel.promptFor("Please enter the server type you want. Options: ${ServerType.values()}"))
-        val serverSettings = when (serverType) {
-            ServerType.VANILLA -> Paper.createFromPrompts(event.channel)
-            ServerType.CURSEFORGE -> CurseForge.createFromPrompts(event.channel)
-        }
-        val memory =
-            event.channel.promptFor("Please enter the memory for this server. Use desired GB * 1024 to get number.")
-                .toInt()
-        val cpu = event.channel.promptFor("How many Cpus do you want for this server. Options: 1,2,4").toInt()
-
-        return ServerConfig(
-            event.guild.id,
-            words[1],
-            memory,
-            cpu,
-            serverType,
-            serverSettings
-        )
-    }
 }

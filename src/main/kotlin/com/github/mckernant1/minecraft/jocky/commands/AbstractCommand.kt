@@ -1,8 +1,12 @@
 package com.github.mckernant1.minecraft.jocky.commands
 
 import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
+import com.github.mckernant1.minecraft.jocky.model.CurseForge
+import com.github.mckernant1.minecraft.jocky.model.Paper
 import com.github.mckernant1.minecraft.jocky.model.ServerConfig
+import com.github.mckernant1.minecraft.jocky.model.ServerType
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
+import com.github.mckernant1.minecraft.jocky.util.promptFor
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,5 +31,28 @@ abstract class AbstractCommand(protected val event: MessageReceivedEvent) {
     abstract suspend fun execute()
 
     fun getCloudformationTemplate(): String = this::class.java.getResource("/minecraft_on_ecs.yml").readText()
+
+
+    fun promptForServerConfig(): ServerConfig {
+        val serverType =
+            ServerType.valueOf(event.channel.promptFor("Please enter the server type you want. Options: ${ServerType.values()}"))
+        val serverSettings = when (serverType) {
+            ServerType.VANILLA -> Paper.createFromPrompts(event.channel)
+            ServerType.CURSEFORGE -> CurseForge.createFromPrompts(event.channel)
+        }
+        val memory =
+            event.channel.promptFor("Please enter the memory for this server. Use desired GB * 1024 to get number.")
+                .toInt()
+        val cpu = event.channel.promptFor("How many Cpus do you want for this server. Options: 1,2,4").toInt()
+
+        return ServerConfig(
+            event.guild.id,
+            words[1],
+            memory,
+            cpu,
+            serverType,
+            serverSettings
+        )
+    }
 
 }

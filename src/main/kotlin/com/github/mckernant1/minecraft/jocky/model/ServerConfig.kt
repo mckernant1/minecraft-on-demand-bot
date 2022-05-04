@@ -54,6 +54,13 @@ class ServerConfig(
 
     fun getStackName(): String = "${serverName}-${discordServerId}"
 
+    fun getServerSettings(): Server {
+        return when (type) {
+            ServerType.VANILLA -> gson.fromJson(this.serverSettings, Paper::class.java)
+            ServerType.CURSEFORGE -> gson.fromJson(this.serverSettings, CurseForge::class.java)
+        }
+    }
+
     override fun toString(): String = gson.toJson(this)
 
     class Builder {

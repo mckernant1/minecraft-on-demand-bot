@@ -2,6 +2,8 @@ package com.github.mckernant1.minecraft.jocky.commands
 
 import com.github.mckernant1.minecraft.jocky.core.getPublicIp
 import com.github.mckernant1.minecraft.jocky.execptions.InvalidCommandException
+import com.github.mckernant1.minecraft.jocky.model.CurseForge
+import com.github.mckernant1.minecraft.jocky.model.Paper
 import com.github.mckernant1.minecraft.jocky.model.ServerConfig
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -23,21 +25,20 @@ status: ${if (config.onOffSwitch == 1) "On with IP of `${getPublicIp(config.getS
 cpu: ${config.cpu}
 memory: ${config.memory}
 type: ${config.type}
-ops: ${config.ops}
+ops: ${config.getServerSettings().ops}
 ${getPropsForType(config)}
             """.trimIndent()).complete()
 
     }
 
-    private fun getPropsForType(config: ServerConfig): String = when (config.type) {
-        "vanilla" ->
-            """version: ${config.version}
-            """.trimIndent()
-        "FTBA" ->
-            """
-ftbModpackId: ${config.ftbModpackId}
-ftbModPackVersionId: ${config.ftbModPackVersionId}
-            """.trimIndent()
+    private fun getPropsForType(config: ServerConfig): String = when (config.getServerSettings()) {
+        is Paper -> """
+            version: ${(config.getServerSettings() as Paper).version}
+        """.trimIndent()
+        is CurseForge -> """
+            packId: ${(config.getServerSettings() as CurseForge).packId}
+            hash: ${(config.getServerSettings() as CurseForge).hash}
+        """.trimIndent()
         else -> ""
     }
 }
