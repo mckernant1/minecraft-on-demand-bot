@@ -36,7 +36,7 @@ dependencies {
 
     implementation("net.dv8tion:JDA:4.4.0_352")
 
-    implementation("org.slf4j:slf4j-simple:1.7.30")
+    implementation("org.slf4j:slf4j-simple:1.7.36")
 
 
     implementation(platform("software.amazon.awssdk:bom:2.15.69"))

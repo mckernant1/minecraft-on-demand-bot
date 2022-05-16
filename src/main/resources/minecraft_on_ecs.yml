@@ -164,6 +164,9 @@ Resources:
         - Name: "efs-vol"
           EFSVolumeConfiguration:
             FilesystemId: !Ref FileSystem
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
 
   Service:
     Type: AWS::ECS::Service

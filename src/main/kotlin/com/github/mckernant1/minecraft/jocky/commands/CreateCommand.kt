@@ -9,10 +9,12 @@ import com.github.mckernant1.minecraft.jocky.model.ServerConfig
 import com.github.mckernant1.minecraft.jocky.model.ServerType
 import com.github.mckernant1.minecraft.jocky.singletons.serverTable
 import com.github.mckernant1.minecraft.jocky.util.promptFor
+import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import software.amazon.awssdk.services.cloudformation.model.Capability
 import software.amazon.awssdk.services.cloudformation.model.CreateStackRequest
 import software.amazon.awssdk.services.cloudformation.model.StackStatus
+import java.time.Duration
 
 class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
 
@@ -41,6 +43,7 @@ class CreateCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
             listOf(StackStatus.ROLLBACK_COMPLETE, StackStatus.ROLLBACK_FAILED)
         )
         if (success) {
+            delay(Duration.ofSeconds(30).toMillis())
             val publicIp = getPublicIp(stackName)
             serverTable.putItem(config)
             event.channel.sendMessage("Your minecraft server ${config.serverName} has been created with ip: `$publicIp:25565`!")

@@ -11,7 +11,7 @@ class ServerTableAccess {
         private val TABLE_NAME = System.getenv("MINECRAFT_SERVERS_TABLE_NAME")
             ?: error("Environment variable 'MINECRAFT_SERVERS_TABLE_NAME' is not defined")
         private val table: DynamoDbTable<ServerConfig> =
-            ddbClient.table(TABLE_NAME, TableSchema.fromBean(ServerConfig::class.java))
+            ddbClient.table(TABLE_NAME, TableSchema.fromClass(ServerConfig::class.java))
     }
 
     fun getItem(discordServerId: String, serverName: String): ServerConfig? =

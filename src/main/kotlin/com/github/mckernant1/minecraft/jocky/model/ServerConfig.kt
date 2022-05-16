@@ -2,9 +2,9 @@ package com.github.mckernant1.minecraft.jocky.model
 
 import com.google.gson.Gson
 import org.slf4j.LoggerFactory
-import software.amazon.awssdk.enhanced.dynamodb.internal.converter.attribute.EnumAttributeConverter
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbConvertedBy
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbIgnore
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbImmutable
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey
@@ -19,12 +19,12 @@ class ServerConfig(
     @get:DynamoDbSortKey
     @get:DynamoDbAttribute("serverName")
     val serverName: String,
-    var memory: Int,
-    var cpu: Int,
-    @get:DynamoDbConvertedBy(EnumAttributeConverter::class)
+    val memory: Int,
+    val cpu: Int,
+    @get:DynamoDbConvertedBy(ServerTypeAttributeConverter::class)
     val type: ServerType,
-    private val serverSettings: String,
-    var onOffSwitch: Int
+    val serverSettings: String,
+    val onOffSwitch: Int
 ) {
 
     constructor(
@@ -41,6 +41,7 @@ class ServerConfig(
         private val gson = Gson()
     }
 
+    @DynamoDbIgnore
     fun toParameterList(): List<Parameter> = listOf(
         Parameter.builder().parameterKey("Memory").parameterValue(memory.toString()).build(),
         Parameter.builder().parameterKey("CPU").parameterValue(cpu.toString()).build(),
@@ -51,14 +52,31 @@ class ServerConfig(
     ).also {
         logger.info("Parameters $it")
     }
-
+    @DynamoDbIgnore
     fun getStackName(): String = "${serverName}-${discordServerId}"
 
+    @DynamoDbIgnore
     fun getServerSettings(): Server {
         return when (type) {
             ServerType.VANILLA -> gson.fromJson(this.serverSettings, Paper::class.java)
             ServerType.CURSEFORGE -> gson.fromJson(this.serverSettings, CurseForge::class.java)
         }
+    }
+    @DynamoDbIgnore
+    fun update(
+        memory: Int? = null,
+        cpu: Int? = null,
+        onOffSwitch: Int? = null,
+    ): ServerConfig {
+        return ServerConfig(
+            discordServerId,
+            serverName,
+            memory ?: this.memory,
+            cpu ?: this.cpu,
+            type,
+            serverSettings,
+            onOffSwitch ?: this.onOffSwitch
+        )
     }
 
     override fun toString(): String = gson.toJson(this)

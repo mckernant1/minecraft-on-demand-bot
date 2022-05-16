@@ -16,8 +16,10 @@ class StopCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     }
 
     override suspend fun execute() {
-        val server = server!!
-        server.onOffSwitch = 0
+        var server = server!!
+        server = server.update(
+            onOffSwitch = 0
+        )
         cfnClient.updateStack {
             it.stackName(server.getStackName())
             it.capabilities(Capability.CAPABILITY_NAMED_IAM)

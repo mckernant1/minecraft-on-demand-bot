@@ -4,15 +4,14 @@ import com.github.mckernant1.minecraft.jocky.util.promptFor
 import net.dv8tion.jda.api.entities.MessageChannel
 
 
-abstract class Server(
-    open val ops: List<String>
-) {
+interface Server {
+    val ops: List<String>
 }
 
 data class Paper(
     override val ops: List<String>,
     val version: String
-) : Server(ops) {
+) : Server {
     companion object {
         fun createFromPrompts(channel: MessageChannel): Paper {
             val ops = channel.promptFor("Please list out the ops you want on this server. Example: TheeAlbinoTree TheBearPenguin").split(" ")
@@ -26,7 +25,7 @@ data class CurseForge(
     override val ops: List<String>,
     val packId: Int,
     val hash: String
-) : Server(ops) {
+) : Server {
     companion object {
         fun createFromPrompts(channel: MessageChannel): CurseForge {
             val ops = channel.promptFor("Please list out the ops you want on this server. Example: TheeAlbinoTree TheBearPenguin").split(" ")

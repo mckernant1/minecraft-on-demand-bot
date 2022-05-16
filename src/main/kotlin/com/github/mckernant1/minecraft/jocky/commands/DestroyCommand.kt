@@ -17,21 +17,6 @@ class DestroyCommand(event: MessageReceivedEvent) : AbstractCommand(event) {
     override suspend fun execute() {
         val server = server!!
 
-        event.channel.sendMessage(
-            "You are requesting to delete the server. This requires 2 member confirmation\n" +
-                    "Another member of the server must type: `\$confirm delete ${server.serverName}`"
-        ).complete()
-        delay(Duration.ofSeconds(30).toMillis())
-
-        val confirmation = event.channel.history.retrievedHistory.any {
-            it.author.id != event.author.id && it.contentRaw == "\$confirm delete ${server.serverName}"
-        }
-
-        if (!confirmation) {
-            event.channel.sendMessage("You have failed to confirm deletion").complete()
-            return
-        }
-        
         serverTable.deleteItem(server)
         cfnClient.deleteStack {
             it.stackName(server.getStackName())
