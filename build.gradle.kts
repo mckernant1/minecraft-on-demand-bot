@@ -29,9 +29,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
-    implementation("com.github.mckernant1:kotlin-utils:0.0.12")
+    implementation("com.github.mckernant1:kotlin-utils:0.0.27")
     implementation("com.google.code.gson:gson:2.9.0")
 
     implementation("net.dv8tion:JDA:4.4.0_352")
