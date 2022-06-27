@@ -26,10 +26,7 @@ class MessageListener : ListenerAdapter() {
         val words = event.message.contentRaw.split("\\s+".toRegex())
         val command = getCommandFromString(words[0], event) ?: return
 
-        if (event.author.id == "164148012019482625") {
-            event.channel.sendMessage("Fahk you").complete()
-            return
-        }
+       
 
         event.channel.sendTyping().complete()
         thread {
